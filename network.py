@@ -36,7 +36,11 @@ class Network(object):
         self.sizes = sizes
         self.biases = [np.random.randn(y, 1) for y in sizes[1:]]
         self.weights = [np.random.randn(y, x)
-                        for x, y in zip(sizes[:-1], sizes[1:])]
+                        for x, y in zip(sizes[:-1], sizes[1:])] # y skips the first value, x skips the last value
+                        #makes an array of matrices such that each matrix has number of rows = y and number of columns equal to x
+                        #for instance, the first matrix will have size sizes[1] x sizes[0] because that's what x and y will be and that
+                        #is exactly how the weight matrix should be structured
+                        #so weight matrix can be indexed by weights[layer(starting from 0)][jth neuron in layer l][kth neuron in layer l-1]
 
     def feedforward(self, a):
         """Return the output of the network if ``a`` is input."""
@@ -79,8 +83,12 @@ class Network(object):
         gradient descent using backpropagation to a single mini batch.
         The ``mini_batch`` is a list of tuples ``(x, y)``, and ``eta``
         is the learning rate."""
-        nabla_b = [np.zeros(b.shape) for b in self.biases]
+        nabla_b = [np.zeros(b.shape) for b in self.biases] # note that nabla is the gradient symbol (upside down triangle)
         nabla_w = [np.zeros(w.shape) for w in self.weights]
+        # Each tuple in the mini-batch has an input (x) and an expected output (y)
+        # This loops over each of these tuples. For each input and respective expected output, the partial derivatives of the cost
+        # function with respect to the weights and biases are calculated. Then, the weights and biases are updated according to the rules
+        # This happens FOR EACH tuple in the mini batch
         for x, y in mini_batch:
             delta_nabla_b, delta_nabla_w = self.backprop(x, y)
             nabla_b = [nb+dnb for nb, dnb in zip(nabla_b, delta_nabla_b)]
